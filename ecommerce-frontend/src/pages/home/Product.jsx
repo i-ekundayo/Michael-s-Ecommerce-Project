@@ -27,8 +27,8 @@ const Product = ({ loadCart, product }) => {
   }
 
   function selectQuantity(e) {
-    const quanitySelceted = Number(e.target.value);
-    setQuantity(quanitySelceted);
+    const quantitySelceted = Number(e.target.value);
+    setQuantity(quantitySelceted);
   }
 
   return (

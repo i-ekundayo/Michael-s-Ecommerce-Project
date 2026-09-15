@@ -41,58 +41,76 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const cartItems = await CartItem.findAll({
-    where: {
-      userId: req.user.userId,
-    },
-  });
+  try {
+    const cartItems = await CartItem.findAll({
+      where: {
+        userId: req.user.userId,
+      },
+    });
 
-  if (cartItems.length === 0) {
-    return res.status(400).json({ error: "Cart is empty" });
+    if (cartItems.length === 0) {
+      return res.status(400).json({
+        error: "Cart is empty",
+      });
+    }
+
+    let totalCostCents = 0;
+
+    const products = await Promise.all(
+      cartItems.map(async (item) => {
+        const product = await Product.findByPk(item.productId);
+
+        if (!product) {
+          throw new Error(`Product not found: ${item.productId}`);
+        }
+
+        const deliveryOption = await DeliveryOption.findByPk(
+          item.deliveryOptionId,
+        );
+
+        if (!deliveryOption) {
+          throw new Error(`Invalid delivery option: ${item.deliveryOptionId}`);
+        }
+
+        const productCost = product.priceCents * item.quantity;
+        const shippingCost = deliveryOption.priceCents;
+
+        totalCostCents += productCost + shippingCost;
+
+        const estimatedDeliveryTimeMs =
+          Date.now() + deliveryOption.deliveryDays * 24 * 60 * 60 * 1000;
+
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          estimatedDeliveryTimeMs,
+        };
+      }),
+    );
+
+    totalCostCents = Math.round(totalCostCents * 1.1);
+
+    const order = await Order.create({
+      userId: req.user.userId,
+      orderTimeMs: Date.now(),
+      totalCostCents,
+      products,
+    });
+
+    await CartItem.destroy({
+      where: {
+        userId: req.user.userId,
+      },
+    });
+
+    res.status(201).json(order);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Something went wrong while creating the order",
+    });
   }
-
-  let totalCostCents = 0;
-  const products = await Promise.all(
-    cartItems.map(async (item) => {
-      const product = await Product.findByPk(item.productId);
-      if (!product) {
-        throw new Error(`Product not found: ${item.productId}`);
-      }
-      const deliveryOption = await DeliveryOption.findByPk(
-        item.deliveryOptionId,
-      );
-      if (!deliveryOption) {
-        throw new Error(`Invalid delivery option: ${item.deliveryOptionId}`);
-      }
-      const productCost = product.priceCents * item.quantity;
-      const shippingCost = deliveryOption.priceCents;
-      totalCostCents += productCost + shippingCost;
-      const estimatedDeliveryTimeMs =
-        Date.now() + deliveryOption.deliveryDays * 24 * 60 * 60 * 1000;
-      return {
-        productId: item.productId,
-        quantity: item.quantity,
-        estimatedDeliveryTimeMs,
-      };
-    }),
-  );
-
-  totalCostCents = Math.round(totalCostCents * 1.1);
-
-  const order = await Order.create({
-    userId: req.user.userId,
-    orderTimeMs: Date.now(),
-    totalCostCents,
-    products,
-  });
-
-  await CartItem.destroy({
-    where: {
-      userId: req.user.userId,
-    },
-  });
-
-  res.status(201).json(order);
 });
 
 router.get("/:orderId", async (req, res) => {

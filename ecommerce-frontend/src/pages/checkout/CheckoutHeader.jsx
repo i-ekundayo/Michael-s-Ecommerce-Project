@@ -1,11 +1,11 @@
 import { Link } from "react-router";
 import CheckoutLockIcon from '../../assets/images/icons/checkout-lock-icon.png';
 // import Logo from '../../assets/images/logo.png';
-import MobileLogo from '../../assets/images/mobile-logo.png';
+// import MobileLogo from '../../assets/images/mobile-logo.png';
 import Logo from "../../assets/images/new-logo.png";
 import "./CheckoutHeader.css";
 
-const CheckoutHeader = () => {
+const CheckoutHeader = ({paymentSummary}) => {
   return (
     <div>
       <div className="checkout-header">
@@ -22,7 +22,7 @@ const CheckoutHeader = () => {
           <div className="checkout-header-middle-section">
             Checkout (
             <Link className="return-to-home-link" to="/home">
-              3 items
+              {paymentSummary && paymentSummary.totalItems} items
             </Link>
             )
           </div>

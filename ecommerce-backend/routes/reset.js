@@ -1,51 +1,51 @@
-import express from 'express';
-import { sequelize } from '../models/index.js';
-import { Product } from '../models/Product.js';
-import { DeliveryOption } from '../models/DeliveryOption.js';
-import { CartItem } from '../models/CartItem.js';
-import { Order } from '../models/Order.js';
-import { defaultProducts } from '../defaultData/defaultProducts.js';
-import { defaultDeliveryOptions } from '../defaultData/defaultDeliveryOptions.js';
-// import { defaultCart } from '../defaultData/defaultCart.js';
-// import { defaultOrders } from '../defaultData/defaultOrders.js';
+import express from "express";
+import { Product } from "../models/Product.js";
+import { DeliveryOption } from "../models/DeliveryOption.js";
+import { defaultProducts } from "../defaultData/defaultProducts.js";
+import { defaultDeliveryOptions } from "../defaultData/defaultDeliveryOptions.js";
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-  await sequelize.sync({ force: true });
 
-  const timestamp = Date.now();
 
-  const productsWithTimestamps = defaultProducts.map((product, index) => ({
-    ...product,
-    createdAt: new Date(timestamp + index),
-    updatedAt: new Date(timestamp + index)
-  }));
+router.post("/", async (req, res) => {
 
-  const deliveryOptionsWithTimestamps = defaultDeliveryOptions.map((option, index) => ({
-    ...option,
-    createdAt: new Date(timestamp + index),
-    updatedAt: new Date(timestamp + index)
-  }));
+  try {
+    if (process.env.NODE_ENV === "production") {
+      return res.status(403).json({
+        error: "Reset endpoint is disabled in production",
+      });
+    }
+    
+    await Product.destroy({ where: {} });
+    await DeliveryOption.destroy({ where: {} });
 
-  // const cartItemsWithTimestamps = defaultCart.map((item, index) => ({
-  //   ...item,
-  //   createdAt: new Date(timestamp + index),
-  //   updatedAt: new Date(timestamp + index)
-  // }));
+    const timestamp = Date.now();
 
-  // const ordersWithTimestamps = defaultOrders.map((order, index) => ({
-  //   ...order,
-  //   createdAt: new Date(timestamp + index),
-  //   updatedAt: new Date(timestamp + index)
-  // }));
+    const productsWithTimestamps = defaultProducts.map((product, index) => ({
+      ...product,
+      createdAt: new Date(timestamp + index),
+      updatedAt: new Date(timestamp + index),
+    }));
 
-  await Product.bulkCreate(productsWithTimestamps);
-  await DeliveryOption.bulkCreate(deliveryOptionsWithTimestamps);
-  // await CartItem.bulkCreate(cartItemsWithTimestamps);
-  // await Order.bulkCreate(ordersWithTimestamps);
+    const deliveryOptionsWithTimestamps = defaultDeliveryOptions.map(
+      (option, index) => ({
+        ...option,
+        createdAt: new Date(timestamp + index),
+        updatedAt: new Date(timestamp + index),
+      }),
+    );
 
-  res.status(204).send();
+    await Product.bulkCreate(productsWithTimestamps);
+    await DeliveryOption.bulkCreate(deliveryOptionsWithTimestamps);
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Something went wrong while resetting the data",
+    });
+  }
 });
 
 export default router;

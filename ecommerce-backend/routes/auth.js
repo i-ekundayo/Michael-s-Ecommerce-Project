@@ -17,9 +17,26 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // 2. Check if the email is already registered
+    // 2. Clean user input
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedName) {
+      return res.status(400).json({
+        error: "Name cannot be empty",
+      });
+    }
+
+    // 3. Validate password
+    if (password.length < 8) {
+      return res.status(400).json({
+        error: "Password must be at least 8 characters",
+      });
+    }
+
+    // 4. Check if the email is already registered
     const existingUser = await User.findOne({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
     if (existingUser) {
@@ -28,17 +45,17 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // 3. Hash the password
+    // 5. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 4. Create the user
+    // 6. Create the user
     const user = await User.create({
-      name,
-      email,
+      name: normalizedName,
+      email: normalizedEmail,
       password: hashedPassword,
     });
 
-    // 5. Don't send the password back to the frontend
+    // 7. Don't send the password back
     res.status(201).json({
       message: "Registration successful",
       user: {
@@ -67,19 +84,21 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // 2. Find the user by email
+    // 2. Normalize the email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // 3. Find the user
     const user = await User.findOne({
-      where: { email },
+      where: { email: normalizedEmail },
     });
 
-    // 3. Check if the user exists
     if (!user) {
       return res.status(401).json({
         error: "Invalid email or password",
       });
     }
 
-    // 4. Compare the entered password with the hashed password
+    // 4. Compare the password with the stored hash
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
 
     if (!passwordIsCorrect) {
@@ -88,7 +107,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // 5. Create a JWT
+    // 5. Create JWT
     const token = jwt.sign(
       {
         userId: user.id,
@@ -100,7 +119,7 @@ router.post("/login", async (req, res) => {
       },
     );
 
-    // 6. Send the token and user information
+    // 6. Send token and safe user information
     res.status(200).json({
       message: "Login successful",
       token,

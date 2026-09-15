@@ -1,5 +1,6 @@
 import api from "../../api/axios";
 import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 import OrderSummary from "./OrderSummary";
 import PaymentSummary from "./PaymentSummary";
 import CheckoutHeader from "./CheckoutHeader";
@@ -8,10 +9,11 @@ import "./CheckoutPage.css";
 const CheckoutPage = ({ cart, loadCart }) => {
   const [deliveryOptions, setDeliveryOptions] = useState([]);
   const [paymentSummary, setPaymentSummary] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchCheckoutData = async () => {
-      let response = await api.get(
+      const response = await api.get(
         "/delivery-options?expand=estimatedDeliveryTime"
       );
       setDeliveryOptions(response.data);
@@ -22,19 +24,29 @@ const CheckoutPage = ({ cart, loadCart }) => {
 
   useEffect(() => {
     const fetchPaymentSummary = async () => {
-      const response = await api.get("/payment-summary");
-      setPaymentSummary(response.data);
+      if (!user) {
+        setPaymentSummary(null);
+        return;
+      }
+
+      try {
+        const response = await api.get("/payment-summary");
+        setPaymentSummary(response.data);
+      } catch (error) {
+        console.error("Failed to load payment summary:", error);
+        setPaymentSummary(null);
+      }
     };
 
     fetchPaymentSummary();
-  }, [cart]);
+  }, [user, cart]);
 
   return (
     <>
       <link rel="icon" type="image/svg+xml" href="cart-favicon.png" />
       <title>Checkout</title>
 
-      <CheckoutHeader />
+      <CheckoutHeader paymentSummary={paymentSummary} />
 
       <div className="checkout-page">
         <div className="page-title">Review your order</div>

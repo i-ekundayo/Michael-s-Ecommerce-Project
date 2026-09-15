@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../api/axios";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import Header from "../../components/Header";
@@ -21,11 +21,11 @@ const HomePage = ({ cart, loadCart }) => {
   useEffect(() => {
     const getHomeData = async () => {
       if (search) {
-        const response = await axios.get(`/api/products?search=${search}`);
+        const response = await api.get(`/products?search=${search}`);
         setProducts(response.data);
         return;
       }
-      const response = await axios.get("/api/products");
+      const response = await api.get("/products");
       setProducts(response.data);
     };
 
@@ -40,7 +40,11 @@ const HomePage = ({ cart, loadCart }) => {
       <Header cart={cart} />
 
       <div className="home-page">
-        <ProductsGrid products={products} loadCart={loadCart} />
+        {search && products.length === 0 ? (
+          <div className="no-results">No products found for "{search}"</div>
+        ) : (
+          <ProductsGrid products={products} loadCart={loadCart} />
+        )}
       </div>
     </>
   );

@@ -107,10 +107,11 @@
 }
 
 .header .right-section {
-  width: 180px;
+  /* width: 180px; */
   flex-shrink: 0;
   display: flex;
   justify-content: end;
+  align-items: center
 }
 
 .header .orders-link {
@@ -160,4 +161,27 @@
 
   width: 26px;
   text-align: center;
+}
+
+.user-name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 14px;
+  margin-right: 15px;
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.welcome-text {
+  font-size: 14px;
+  color: #d0d0d0;
+  line-height: 1.2;
+}
+
+.name-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  text-transform: capitalize;
 }
