@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { useState, useEffect, Fragment } from "react";
 import { Link, useParams } from "react-router";
 import Header from "../components/Header";
+import { getImageUrl } from "../utils/helper";
 import "./TrackingPage.css";
 
 const TrackingPage = ({ cart }) => {
@@ -59,7 +60,7 @@ const TrackingPage = ({ cart }) => {
           </div>
           <div className="product-info">{orderProduct.product.name}</div>
           <div className="product-info">Quantity: {orderProduct.quantity}</div>
-          <img className="product-image" src={orderProduct.product.image} />
+          <img className="product-image" src={getImageUrl(orderProduct.product.image)} />
           <div className="progress-labels-container">
             <div
               className={`progress-label ${isPreparing && "current-status"}`}

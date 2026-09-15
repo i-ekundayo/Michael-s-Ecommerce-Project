@@ -1,5 +1,6 @@
 import api from "../../api/axios";
 import { useState } from "react";
+import {getImageUrl} from "../../utils/helper";
 import formatMoney from "../../utils/money";
 import CheckmarkIcon from "../../assets/images/icons/checkmark.png";
 
@@ -37,7 +38,8 @@ const Product = ({ loadCart, product }) => {
         <img
           className="product-image"
           data-testid="product-image"
-          src={product.image}
+          src={getImageUrl(product.image)}
+          alt={product.name}
         />
       </div>
 
@@ -47,7 +49,10 @@ const Product = ({ loadCart, product }) => {
         <img
           className="product-rating-stars"
           data-testid="product-rating-stars-image"
-          src={`images/ratings/rating-${product.rating.stars * 10}.png`}
+          src={getImageUrl(
+            `images/ratings/rating-${product.rating.stars * 10}.png`,
+          )}
+          alt={`${product.rating.stars} star rating`}
         />
         <div className="product-rating-count link-primary">
           {product.rating.count}

@@ -1,5 +1,6 @@
 import api from "../../api/axios";
 import { useState } from "react";
+import { getImageUrl } from "../../utils/helper";
 import formatMoney from "../../utils/money";
 
 const CardItemDetails = ({ cartItem, loadCart }) => {
@@ -40,7 +41,7 @@ const CardItemDetails = ({ cartItem, loadCart }) => {
 
   return (
     <>
-      <img className="product-image" src={cartItem.product.image} />
+      <img className="product-image" src={getImageUrl(cartItem.product.image)} />
 
       <div className="cart-item-details">
         <div className="product-name">{cartItem.product.name}</div>
