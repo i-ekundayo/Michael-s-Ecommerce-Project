@@ -15,6 +15,10 @@
   height: 60px;
 }
 
+.header-top {
+  display: contents;
+}
+
 .header .left-section {
   width: 208px;
 }
@@ -51,22 +55,6 @@
 .header .logo {
   height: 40px;
   margin-top: 1px;
-}
-
-.header .mobile-logo {
-  display: none;
-}
-
-@media (max-width: 675px) {
-  .header .logo {
-    display: none;
-  }
-
-  .header .mobile-logo {
-    display: block;
-    height: 26px;
-    margin-top: 1px;
-  }
 }
 
 .header .middle-section {
@@ -156,11 +144,13 @@
   font-weight: 700;
 
   position: absolute;
-  top: 8.5px;
-  right: 46px;
+  top: 8px;
+  left: 15px;
 
   width: 26px;
   text-align: center;
+
+  pointer-events: none;
 }
 
 .user-name {
@@ -184,4 +174,240 @@
   color: #ffffff;
   line-height: 1.3;
   text-transform: capitalize;
+}
+
+/* =========================
+   MOBILE HEADER
+========================= */
+
+.hamburger-button {
+  display: none;
+}
+
+.mobile-search {
+  display: none;
+}
+
+/* =========================
+   TABLET / MOBILE
+========================= */
+
+@media (max-width: 675px) {
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+  
+    height: auto;
+    min-height: 60px;
+  
+    padding: 10px;
+  
+    display: block;
+  }
+
+  /* =========================
+     TOP ROW
+  ========================= */
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 40px;
+  }
+
+  /* Logo */
+
+  .header .left-section {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .header .logo-link {
+    font-size: 20px;
+    padding: 5px;
+  }
+
+  /* IMPORTANT:
+     Keep the logo visible on mobile
+  */
+
+  .header .logo {
+    display: block;
+    height: 32px;
+  }
+
+  /* Hide desktop search */
+
+  .header .middle-section {
+    display: none;
+  }
+
+  /* Right section */
+
+  .header .right-section {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+  }
+
+  /* Hide desktop-only items */
+
+  .header .desktop-user,
+  .header .orders-link,
+  .header .desktop-logout {
+    display: none;
+  }
+
+  /* =========================
+     CART
+  ========================= */
+
+  .header .cart-link {
+    padding: 6px 8px;
+  }
+
+  .header .cart-text {
+    display: none;
+  }
+
+  .header .cart-icon {
+    width: 34px;
+  }
+
+  /* .header .cart-quantity {
+    top: 7px;
+    right: 31px;
+  } */
+
+  /* =========================
+     HAMBURGER
+  ========================= */
+
+  .hamburger-button {
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 40px;
+    height: 40px;
+
+    padding: 7px;
+    margin-left: 3px;
+
+    background: transparent;
+    border: none;
+
+    cursor: pointer;
+
+    gap: 5px;
+  }
+
+  .hamburger-button span {
+    display: block;
+
+    width: 25px;
+    height: 2px;
+
+    background-color: white;
+
+    border-radius: 2px;
+  }
+
+  /* =========================
+     MOBILE SEARCH
+  ========================= */
+
+  .mobile-search {
+    display: flex;
+
+    width: 100%;
+
+    margin-top: 10px;
+  }
+
+  .mobile-search .search-bar {
+    width: 0;
+    flex: 1;
+
+    height: 38px;
+  }
+
+  /* =========================
+     MOBILE MENU
+  ========================= */
+
+  .mobile-menu-overlay {
+    position: fixed;
+    inset: 0;
+  
+    background-color: rgba(0, 0, 0, 0.45);
+  
+    z-index: 1500;
+  }
+
+  .mobile-menu {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+  
+    width: 250px;
+  
+    background-color: rgb(8, 79, 45);
+  
+    padding: 15px;
+  
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  
+    box-sizing: border-box;
+  
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  
+    z-index: 2001;
+  
+    border-radius: 16px;
+  }
+
+  .mobile-user {
+    margin: 0;
+
+    padding: 0 0 10px;
+
+    border-left: none;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .mobile-menu-link {
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    padding: 10px 5px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .mobile-menu-link:hover {
+    text-decoration: underline;
+  }
+
+  .mobile-logout {
+    padding: 5px;
+  }
 }
